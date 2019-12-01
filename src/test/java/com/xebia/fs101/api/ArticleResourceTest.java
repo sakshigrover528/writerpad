@@ -1,4 +1,4 @@
-package com.xebia.fs101.writerpad.api;
+package com.xebia.fs101.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xebia.fs101.model.Article;
@@ -18,7 +18,10 @@ import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,7 +76,7 @@ class ArticleResourceTest {
 
     @Test
     void should_update_the_article() throws Exception {
-        ArticleRequest articleRequest = new ArticleRequest.Builder()
+            ArticleRequest articleRequest = new ArticleRequest.Builder()
                 .withBody("spring boot")
                 .withDescription("application")
                 .withTitle("spring boot application")

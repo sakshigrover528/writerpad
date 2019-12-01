@@ -1,7 +1,6 @@
 package com.xebia.fs101.api;
 
 import com.xebia.fs101.model.Article;
-import com.xebia.fs101.request.ArticleRequest;
 import com.xebia.fs101.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,7 @@ public class ArticleResource {
     @Autowired
     ArticleService articleService;
     @PostMapping
-    public ResponseEntity<Article> create(@Valid @RequestBody ArticleRequest articleRequest) {
+    public ResponseEntity<Article> create(@Valid @RequestBody com.xebia.fs101.request.ArticleRequest articleRequest) {
         try {
             Article article = articleService.save(articleRequest);
             return new ResponseEntity<>(article, HttpStatus.CREATED);
@@ -40,7 +39,7 @@ public class ArticleResource {
         }
     }
     @PatchMapping(path = "/{slug_uuid}")
-    public ResponseEntity<Article> update(@RequestBody ArticleRequest copyFrom,
+    public ResponseEntity<Article> update(@RequestBody com.xebia.fs101.request.ArticleRequest copyFrom,
                                           @PathVariable("slug_uuid") String slugUuid) {
         Article updateArticle = copyFrom.toArticle();
         Optional<Article> updatedArticle = articleService.update(updateArticle, slugUuid);
@@ -55,9 +54,9 @@ public class ArticleResource {
         return ResponseEntity.noContent().build();
     }
     @GetMapping(path = "/{slug_uuid}")
-    public ResponseEntity<Article> findById(@PathVariable("slug_uuid") final String slugUuid) {
-        Article article = articleService.findById(toUuid(slugUuid));
-        return new ResponseEntity<>(article, HttpStatus.OK);
+    public ResponseEntity<Optional> findById(@PathVariable("slug_uuid") final String slugUuid) {
+        Optional<Article> optionalArticle = articleService.findById(toUuid(slugUuid));
+        return new ResponseEntity<>(optionalArticle, HttpStatus.OK);
     }
     @GetMapping
     public ResponseEntity<List<Article>> findAll(

@@ -6,12 +6,13 @@ import com.xebia.fs101.model.Comment;
 import javax.validation.constraints.NotBlank;
 
 public class CommentRequest {
-    @NotBlank(message = "comment body can't be null")
+    @NotBlank(message = "Comment can't be null or blank")
     private String body;
+
     public CommentRequest() {
     }
-    public CommentRequest(
-            @NotBlank(message = "comment body can't be null") String body) {
+
+    public CommentRequest(String body) {
         this.body = body;
     }
     public String getBody() {

@@ -30,8 +30,12 @@ public class ArticleService {
         article.update(updateArticle);
         return Optional.of(articleRepository.save(article));
     }
-    public Article findById(UUID toUuid) {
-        return articleRepository.findById(toUuid).orElseThrow(RuntimeException::new);
+
+    public Optional<Article> findById(UUID toUuid) {
+        Optional<Article> optionalArticle = articleRepository.findById(toUuid);
+        if (!optionalArticle.isPresent())
+            return Optional.empty();
+        return optionalArticle;
     }
     public boolean delete(String slugUuid) {
         UUID uuid = toUuid(slugUuid);

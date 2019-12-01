@@ -16,7 +16,7 @@ import java.util.Date;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
     private String body;
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -37,7 +37,7 @@ public class Comment {
         this.article = article;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
