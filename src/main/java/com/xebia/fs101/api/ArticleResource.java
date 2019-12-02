@@ -74,23 +74,25 @@ public class ArticleResource {
     }
 
     @GetMapping(params = "status")
-    public ResponseEntity<List<Article>> findByStatus(@RequestParam final String status, Pageable pageable) {
-        List<Article> articles = this.articleService.findByStatus(Status.fromValue(status),pageable);
+    public ResponseEntity<List<Article>> findByStatus(
+            @RequestParam final String status, Pageable pageable) {
+        List<Article> articles = this.articleService
+                .findByStatus(Status.fromValue(status), pageable);
         return new ResponseEntity<>(articles, HttpStatus.OK);
 
 
     }
 
     @PostMapping(path = "/{slugUuid}/PUBLISH")
-    public ResponseEntity<List<Article>> publishArticle(@PathVariable("slugUuid") final String slugUuid) {
-        boolean published=this.articleService.publishArticle(slugUuid);
+    public ResponseEntity<List<Article>> publishArticle(
+            @PathVariable("slugUuid") final String slugUuid) {
+        boolean published = this.articleService.publishArticle(slugUuid);
         if (!published) {
             return ResponseEntity.badRequest().build();
 
         } else
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-
 }
+
 

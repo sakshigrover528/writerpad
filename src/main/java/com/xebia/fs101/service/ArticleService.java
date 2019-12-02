@@ -3,11 +3,12 @@ package com.xebia.fs101.service;
 import com.xebia.fs101.model.Article;
 import com.xebia.fs101.model.Status;
 import com.xebia.fs101.repository.ArticleRepository;
+import com.xebia.fs101.request.ArticleRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.xebia.fs101.request.ArticleRequest;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +26,7 @@ public class ArticleService {
     public Article save(ArticleRequest articleRequest) {
         return articleRepository.save(articleRequest.toArticle());
     }
+
     public Optional<Article> update(Article updateArticle, String slugUuid) {
         UUID id = toUuid(slugUuid);
         Optional<Article> optionalArticle = articleRepository.findById(id);
@@ -42,6 +44,7 @@ public class ArticleService {
             return Optional.empty();
         return optionalArticle;
     }
+
     public boolean delete(String slugUuid) {
         UUID uuid = toUuid(slugUuid);
         Optional<Article> optionalArticle = articleRepository.findById(uuid);
@@ -51,6 +54,7 @@ public class ArticleService {
         optionalArticle.ifPresent(a -> articleRepository.deleteById(a.getId()));
         return true;
     }
+
     public Page<Article> findAll(Pageable pageable) {
         return articleRepository.findAll(pageable);
     }

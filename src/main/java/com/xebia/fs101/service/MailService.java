@@ -11,9 +11,8 @@ public class MailService {
     @Autowired
     public JavaMailSender emailSender;
 
-    public void sendEmail(String to, String subject, String text)
-    {
-        SimpleMailMessage mailMessage=new SimpleMailMessage();
+    public void sendEmail(String to, String subject, String text) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(to);
         mailMessage.setSubject(subject);
         mailMessage.setText(text);
@@ -21,3 +20,4 @@ public class MailService {
 
     }
 }
+

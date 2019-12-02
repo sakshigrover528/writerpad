@@ -28,6 +28,6 @@ public class CommentRequest {
 
 
     public Comment toComment(String ipAddress, Article article) {
-        return new Comment(this.body,ipAddress,article);
+        return new Comment(this.body, ipAddress, article);
     }
 }

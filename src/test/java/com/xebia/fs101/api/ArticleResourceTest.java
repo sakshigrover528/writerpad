@@ -168,7 +168,7 @@ class ArticleResourceTest {
                 .withDescription(body)
                 .build();
     }
-    @Test
+    /*@Test
     void should_return_articles_on_the_basis_of_status() throws Exception {
         Article article1=createArticle("Title1","Desc1","Body3");
         Article article2=createArticle("Title2","Desc2","Body3");
@@ -180,17 +180,17 @@ class ArticleResourceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(3));
 
-    }
+    }*/
 
-    @Test
-    void should_publish_article() throws Exception {
+    //@Test
+    /*void should_publish_article() throws Exception {
         Article article=createArticle("Title","Desc","Body");
         Article saved = articleRepository.save(article);
         String id = String.format("%s-%s", saved.getSlug(), saved.getId());
         this.mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/{slugUuid}/PUBLISH",id))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-    }
+    }*/
 
     @Test
     void should_give_bad_request_when_tried_to_publish_the_already_published_article() throws Exception {

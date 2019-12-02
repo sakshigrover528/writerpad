@@ -26,7 +26,8 @@ public class ArticleRequest {
     private Status status;
 
 
-    public ArticleRequest(String title, String description, String body, Set<String> tags, Status status) {
+    public ArticleRequest(String title, String description,
+                          String body, Set<String> tags, Status status) {
         this.title = title;
         this.description = description;
         this.body = body;

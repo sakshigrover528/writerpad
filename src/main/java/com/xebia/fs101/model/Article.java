@@ -67,33 +67,43 @@ public class Article {
         comments = builder.comments;
         status = builder.status;
     }
+
     public UUID getId() {
         return id;
     }
+
     public String getSlug() {
         return this.title == null ? null : slugify(title);
     }
+
     public String getTitle() {
         return title;
     }
+
     public String getDescription() {
         return description;
     }
+
     public String getBody() {
         return body;
     }
+
     public Set<String> getTags() {
         return tags;
     }
+
     public Date getCreatedAt() {
         return createdAt;
     }
+
     public Date getUpdatedAt() {
         return updatedAt;
     }
+
     public Boolean getFavorite() {
         return favorite;
     }
+
     public int getFavoritesCount() {
         return favoritesCount;
     }
@@ -204,3 +214,4 @@ public class Article {
         return this;
     }
 }
+

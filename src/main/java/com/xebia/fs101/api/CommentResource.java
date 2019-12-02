@@ -42,8 +42,9 @@ public class CommentResource {
         Optional<Article> optionArticle = articleService.findById(toUuid(slugUuid));
         if (optionArticle.isPresent()) {
             if (!this.spamChecker.isSpam(commentRequest.getBody())) {
-                Comment savedComments = commentService.save(commentRequest.toComment(httpServletRequest.getRemoteAddr()
-                        , optionArticle.get()));
+                Comment savedComments = commentService.save(
+                        commentRequest.toComment(httpServletRequest.getRemoteAddr()
+                                , optionArticle.get()));
 
                 return new ResponseEntity<>(savedComments, HttpStatus.CREATED);
             }
@@ -56,7 +57,8 @@ public class CommentResource {
     ResponseEntity<List<Comment>> getAll(@PathVariable("slug_uuid") String slugUuid) {
         Optional<Article> optionalArticle = articleService.findById(toUuid(slugUuid));
         if (optionalArticle.isPresent()) {
-            List<Comment> allComments = commentService.findAllByArticleId(optionalArticle.get().getId());
+            List<Comment> allComments = commentService.findAllByArticleId(
+                    optionalArticle.get().getId());
             return new ResponseEntity<>(allComments, HttpStatus.OK);
 
         }
@@ -77,3 +79,4 @@ public class CommentResource {
         return ResponseEntity.notFound().build();
     }
 }
+
