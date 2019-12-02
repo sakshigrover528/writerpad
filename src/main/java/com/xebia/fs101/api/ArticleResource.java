@@ -1,6 +1,8 @@
 package com.xebia.fs101.api;
 
 import com.xebia.fs101.model.Article;
+import com.xebia.fs101.model.Status;
+import com.xebia.fs101.request.ArticleRequest;
 import com.xebia.fs101.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +32,7 @@ public class ArticleResource {
     @Autowired
     ArticleService articleService;
     @PostMapping
-    public ResponseEntity<Article> create(@Valid @RequestBody com.xebia.fs101.request.ArticleRequest articleRequest) {
+    public ResponseEntity<Article> create(@Valid @RequestBody ArticleRequest articleRequest) {
         try {
             Article article = articleService.save(articleRequest);
             return new ResponseEntity<>(article, HttpStatus.CREATED);
@@ -39,7 +41,7 @@ public class ArticleResource {
         }
     }
     @PatchMapping(path = "/{slug_uuid}")
-    public ResponseEntity<Article> update(@RequestBody com.xebia.fs101.request.ArticleRequest copyFrom,
+    public ResponseEntity<Article> update(@RequestBody ArticleRequest copyFrom,
                                           @PathVariable("slug_uuid") String slugUuid) {
         Article updateArticle = copyFrom.toArticle();
         Optional<Article> updatedArticle = articleService.update(updateArticle, slugUuid);
@@ -70,5 +72,25 @@ public class ArticleResource {
         List<Article> found = pageResult.getContent();
         return new ResponseEntity<>(found, HttpStatus.OK);
     }
+
+    @GetMapping(params = "status")
+    public ResponseEntity<List<Article>> findByStatus(@RequestParam final String status, Pageable pageable) {
+        List<Article> articles = this.articleService.findByStatus(Status.fromValue(status),pageable);
+        return new ResponseEntity<>(articles, HttpStatus.OK);
+
+
+    }
+
+    @PostMapping(path = "/{slugUuid}/PUBLISH")
+    public ResponseEntity<List<Article>> publishArticle(@PathVariable("slugUuid") final String slugUuid) {
+        boolean published=this.articleService.publishArticle(slugUuid);
+        if (!published) {
+            return ResponseEntity.badRequest().build();
+
+        } else
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
 }
 

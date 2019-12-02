@@ -2,6 +2,7 @@ package com.xebia.fs101.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xebia.fs101.model.Article;
+import com.xebia.fs101.model.Status;
 import com.xebia.fs101.repository.ArticleRepository;
 import com.xebia.fs101.request.ArticleRequest;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -164,5 +167,40 @@ class ArticleResourceTest {
                 .withDescription(description)
                 .withDescription(body)
                 .build();
+    }
+    @Test
+    void should_return_articles_on_the_basis_of_status() throws Exception {
+        Article article1=createArticle("Title1","Desc1","Body3");
+        Article article2=createArticle("Title2","Desc2","Body3");
+        Article article3=createArticle("Title3","Desc3","Body3");
+        articleRepository.saveAll(Arrays.asList(article1,article2,article3));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/articles")
+                .param("status","draft"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3));
+
+    }
+
+    @Test
+    void should_publish_article() throws Exception {
+        Article article=createArticle("Title","Desc","Body");
+        Article saved = articleRepository.save(article);
+        String id = String.format("%s-%s", saved.getSlug(), saved.getId());
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/{slugUuid}/PUBLISH",id))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void should_give_bad_request_when_tried_to_publish_the_already_published_article() throws Exception {
+        Article article=createArticle("Title","Desc","Body");
+        article.setStatus(Status.PUBLISHED);
+        Article saved = articleRepository.save(article);
+        String id = String.format("%s-%s", saved.getSlug(), saved.getId());
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/{slugUuid}/PUBLISH",id))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
     }
 }

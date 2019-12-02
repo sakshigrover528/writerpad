@@ -1,42 +1,46 @@
 package com.xebia.fs101.request;
 
 import com.xebia.fs101.model.Article;
+import com.xebia.fs101.model.Status;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static com.xebia.fs101.utils.StringUtils.slugify;
+import static com.xebia.fs101.model.Status.DRAFT;
+
 
 public class ArticleRequest {
-    @NotBlank(message = "Title should not be null")
+
+    @NotNull(message = "Title can't be null")
+    @NotEmpty(message = "Title can't be empty")
     private String title;
-    @NotBlank(message = "Description should not be null")
+    @NotNull(message = "Description can't be null")
+    @NotEmpty(message = "Description can't be empty")
     private String description;
-    @NotBlank(message = "Body should not be null")
+    @NotNull(message = "Body can't be null")
+    @NotEmpty(message = "Body can't be empty")
     private String body;
     private Set<String> tags;
+    private Status status;
+
+
+    public ArticleRequest(String title, String description, String body, Set<String> tags, Status status) {
+        this.title = title;
+        this.description = description;
+        this.body = body;
+        this.tags = tags;
+        this.status = status;
+
+    }
 
     private ArticleRequest(Builder builder) {
         setTitle(builder.title);
         setDescription(builder.description);
         setBody(builder.body);
         setTags(builder.tags);
-    }
-    public ArticleRequest() {
-    }
-
-    public Article toArticle() {
-        return new Article.Builder()
-                .withTitle(this.title)
-                .withDescription(this.description)
-                .withBody(this.body)
-                .withSlug(slugify(title))
-                .withTagList(this.tags == null ? null
-                        : this.tags.stream().
-                        map(String::toLowerCase).
-                        collect(Collectors.toSet()))
-                .build();
+        setStatus(builder.status);
     }
 
     public String getTitle() {
@@ -70,28 +74,48 @@ public class ArticleRequest {
     public void setTags(Set<String> tags) {
         this.tags = tags;
     }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Article toArticle() {
+        if (!Objects.nonNull(status))
+            this.status = DRAFT;
+        return new Article.Builder().withTitle(this.title)
+                .withDescription(this.description)
+                .withBody(this.body)
+                .withTags(this.tags)
+                .withStatus(this.status)
+                .build();
+
+    }
+
     public static final class Builder {
-        private
-        @NotBlank(message = "Title should not be null") String title;
-        private
-        @NotBlank(message = "Description should not be null") String description;
-        private
-        @NotBlank(message = "Body should not be null") String body;
+        public Status status;
+        private String title;
+        private String description;
+        private String body;
         private Set<String> tags;
+
         public Builder() {
         }
 
-        public Builder withTitle(@NotBlank(message = "Title should not be null") String val) {
+        public Builder withTitle(String val) {
             title = val;
             return this;
         }
-        public Builder withDescription(
-                @NotBlank(message = "Description should not be null") String val) {
+
+        public Builder withDescription(String val) {
             description = val;
             return this;
         }
 
-        public Builder withBody(@NotBlank(message = "Body should not be null") String val) {
+        public Builder withBody(String val) {
             body = val;
             return this;
         }
@@ -100,8 +124,21 @@ public class ArticleRequest {
             tags = val;
             return this;
         }
+
         public ArticleRequest build() {
             return new ArticleRequest(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ArticleRequest{"
+                + "title='"
+                + title
+                + '\''
+                + ", description='" + description + '\''
+                + ", body='" + body + '\''
+                + ", tags=" + tags
+                + '}';
     }
 }

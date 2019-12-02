@@ -1,27 +1,33 @@
 package com.xebia.fs101.request;
 
+
 import com.xebia.fs101.model.Article;
 import com.xebia.fs101.model.Comment;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class CommentRequest {
-    @NotBlank(message = "Comment can't be null or blank")
+
+    @NotNull(message = "Body is mandatory field")
+    @NotEmpty(message = "Body can't be empty")
     private String body;
 
     public CommentRequest() {
+
     }
 
     public CommentRequest(String body) {
         this.body = body;
     }
+
     public String getBody() {
         return body;
     }
-    public void setBody(String body) {
-        this.body = body;
-    }
+
+
+
     public Comment toComment(String ipAddress, Article article) {
-        return new Comment(body, ipAddress, article);
+        return new Comment(this.body,ipAddress,article);
     }
 }

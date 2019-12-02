@@ -19,7 +19,7 @@ class ArticleServiceTest {
     @Mock
     ArticleRepository articleRepository;
 
-   /* @Test
+    @Test
     void should_save_the_article() {
         ArticleRequest articleRequest = new ArticleRequest.Builder()
                 .withBody("spring boot")
@@ -29,5 +29,5 @@ class ArticleServiceTest {
         Article saved = articleService.save(articleRequest);
         verify(articleRepository).save(articleRequest.toArticle());
         verifyNoMoreInteractions(articleRepository);
-    }*/
+    }
 }

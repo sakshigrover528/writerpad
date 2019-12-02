@@ -35,7 +35,7 @@ public class Article {
     private String body;
     @ElementCollection
     @CollectionTable(joinColumns = @JoinColumn(name = "id"))
-    private Set<String> tagList;
+    private Set<String> tags;
     @Column(updatable = false, nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
@@ -49,18 +49,23 @@ public class Article {
     @OneToMany
     @JoinColumn(name = "article")
     private List<Comment> comments;
+    private Status status;
+
     public Article() {
     }
+
     private Article(Builder builder) {
         id = builder.id;
         slug = builder.slug;
         title = builder.title;
         description = builder.description;
         body = builder.body;
-        tagList = builder.tagList;
-        updatedAt = builder.updatedAt;
+        tags = builder.tagList;
+
         favorite = builder.favorite;
         favoritesCount = builder.favoritesCount;
+        comments = builder.comments;
+        status = builder.status;
     }
     public UUID getId() {
         return id;
@@ -77,8 +82,8 @@ public class Article {
     public String getBody() {
         return body;
     }
-    public Set<String> getTagList() {
-        return tagList;
+    public Set<String> getTags() {
+        return tags;
     }
     public Date getCreatedAt() {
         return createdAt;
@@ -92,22 +97,15 @@ public class Article {
     public int getFavoritesCount() {
         return favoritesCount;
     }
-    public Article update(Article article) {
-        if (Objects.nonNull(article.getTitle())) {
-            this.title = article.getTitle();
-        }
-        if (Objects.nonNull(article.getBody())) {
-            this.body = article.getBody();
-        }
-        if (Objects.nonNull(article.getDescription())) {
-            this.description = article.getDescription();
-        }
-        if (Objects.nonNull(article.getTagList()) && article.getTagList().size() > 0) {
-            this.tagList = article.getTagList();
-        }
-        this.updatedAt = new Date();
-        return this;
+
+    public Status getStatus() {
+        return status;
     }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public static final class Builder {
         private UUID id;
         private String slug;
@@ -115,49 +113,94 @@ public class Article {
         private String description;
         private String body;
         private Set<String> tagList;
+        private Date createdAt;
         private Date updatedAt;
         private Boolean favorite;
         private int favoritesCount;
+        private List<Comment> comments;
+        private Status status;
+
         public Builder() {
         }
+
         public Builder withId(UUID val) {
             id = val;
             return this;
         }
+
         public Builder withSlug(String val) {
             slug = val;
             return this;
         }
+
         public Builder withTitle(String val) {
             title = val;
             return this;
         }
+
         public Builder withDescription(String val) {
             description = val;
             return this;
         }
+
         public Builder withBody(String val) {
             body = val;
             return this;
         }
-        public Builder withTagList(Set<String> val) {
+
+        public Builder withTags(Set<String> val) {
             tagList = val;
             return this;
         }
+
+
         public Builder withUpdatedAt(Date val) {
-            updatedAt = new Date();
+            updatedAt = val;
             return this;
         }
+
         public Builder withFavorite(Boolean val) {
             favorite = val;
             return this;
         }
+
         public Builder withFavoritesCount(int val) {
             favoritesCount = val;
             return this;
         }
+
+        public Builder withComments(List<Comment> val) {
+            comments = val;
+            return this;
+        }
+
+        public Builder withStatus(Status val) {
+            status = val;
+            return this;
+        }
+
         public Article build() {
             return new Article(this);
         }
+    }
+
+    public Article update(Article changedArticle) {
+
+        if (Objects.nonNull(changedArticle.getTitle())) {
+            this.title = changedArticle.getTitle();
+        }
+        if (Objects.nonNull(changedArticle.getBody())) {
+            this.body = changedArticle.getBody();
+        }
+        if (Objects.nonNull(changedArticle.getDescription())) {
+            this.description = changedArticle.getDescription();
+        }
+        if (Objects.nonNull(changedArticle.getTags()) && changedArticle.getTags().size() > 0) {
+            this.tags = changedArticle.getTags();
+        }
+
+
+        this.updatedAt = new Date();
+        return this;
     }
 }
