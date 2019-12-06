@@ -22,4 +22,8 @@ public abstract class StringUtils {
             throw new IllegalArgumentException("invalid slug uuid");
         }
     }
+
+    public static int findTotalWords(String content) {
+        return content.split("\\s|\\.").length;
+    }
 }

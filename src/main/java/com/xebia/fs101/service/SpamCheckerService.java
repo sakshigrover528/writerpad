@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class SpamChecker {
+public class SpamCheckerService {
     private Set<String> spamWords;
 
     @Autowired

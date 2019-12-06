@@ -108,6 +108,14 @@ public class Article {
         return favoritesCount;
     }
 
+    public void setFavorite(Boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    public void setFavoritesCount(int favoritesCount) {
+        this.favoritesCount = favoritesCount;
+    }
+
     public Status getStatus() {
         return status;
     }

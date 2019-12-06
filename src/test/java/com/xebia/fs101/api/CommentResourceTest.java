@@ -5,7 +5,7 @@ import com.xebia.fs101.model.Article;
 import com.xebia.fs101.model.Comment;
 import com.xebia.fs101.repository.ArticleRepository;
 import com.xebia.fs101.repository.CommentRepository;
-import com.xebia.fs101.request.CommentRequest;
+import com.xebia.fs101.representation.CommentRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

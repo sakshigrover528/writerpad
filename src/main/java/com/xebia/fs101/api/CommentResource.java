@@ -2,10 +2,10 @@ package com.xebia.fs101.api;
 
 import com.xebia.fs101.model.Article;
 import com.xebia.fs101.model.Comment;
-import com.xebia.fs101.request.CommentRequest;
+import com.xebia.fs101.representation.CommentRequest;
 import com.xebia.fs101.service.ArticleService;
 import com.xebia.fs101.service.CommentService;
-import com.xebia.fs101.service.SpamChecker;
+import com.xebia.fs101.service.SpamCheckerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ public class CommentResource {
     @Autowired
     ArticleService articleService;
     @Autowired
-    SpamChecker spamChecker;
+    SpamCheckerService spamCheckerService;
 
     @PostMapping
     public ResponseEntity<Comment> create(@Valid @RequestBody CommentRequest commentRequest,
@@ -41,7 +41,7 @@ public class CommentResource {
 
         Optional<Article> optionArticle = articleService.findById(toUuid(slugUuid));
         if (optionArticle.isPresent()) {
-            if (!this.spamChecker.isSpam(commentRequest.getBody())) {
+            if (!this.spamCheckerService.isSpam(commentRequest.getBody())) {
                 Comment savedComments = commentService.save(
                         commentRequest.toComment(httpServletRequest.getRemoteAddr()
                                 , optionArticle.get()));

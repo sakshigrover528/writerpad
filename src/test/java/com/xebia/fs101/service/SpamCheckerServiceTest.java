@@ -16,29 +16,29 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SpamCheckerTest {
+class SpamCheckerServiceTest {
     @Mock
     private ResourceLoader resourceLoader;
     @InjectMocks
-    private SpamChecker spamChecker;
+    private SpamCheckerService spamCheckerService;
 
     @BeforeEach
     void setUp() throws IOException {
         when(resourceLoader.getResource(anyString())).thenReturn(new ClassPathResource("spamwords.txt"));
-        spamChecker.init();
+        spamCheckerService.init();
     }
 
     @Test
     void should_return_false_if_the_string_doesnt_contain_spam_words() throws IOException {
         String input = "Sakshi";
-        boolean spam = spamChecker.isSpam(input);
+        boolean spam = spamCheckerService.isSpam(input);
         assertThat(spam).isFalse();
     }
 
     @Test
     void should_return_true_if_the_given_string_doesnt_contain_spam_words() throws IOException {
         String input = "buttcheeks";
-        boolean spam = spamChecker.isSpam(input);
+        boolean spam = spamCheckerService.isSpam(input);
         assertThat(spam).isTrue();
     }
 
