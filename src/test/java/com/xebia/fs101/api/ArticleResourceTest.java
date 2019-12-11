@@ -3,14 +3,20 @@ package com.xebia.fs101.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xebia.fs101.model.Article;
 import com.xebia.fs101.model.Status;
+import com.xebia.fs101.model.User;
 import com.xebia.fs101.repository.ArticleRepository;
+import com.xebia.fs101.repository.UserRepository;
 import com.xebia.fs101.representation.ArticleRequest;
+import com.xebia.fs101.representation.UserRequest;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -21,6 +27,7 @@ import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -31,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 class ArticleResourceTest {
     @Autowired
     private ObjectMapper objectMapper;
@@ -38,14 +46,29 @@ class ArticleResourceTest {
     private MockMvc mockMvc;
     @Autowired
     private ArticleRepository articleRepository;
-    @Test
-    public void mockmvc_should_be_set() {
-        assertThat(mockMvc).isNotNull();
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        UserRequest userRequest = new UserRequest("abc", "sakshi.grover@xebia.com", "password");
+        user = userRequest.toUser(passwordEncoder);
+        userRepository.save(user);
     }
 
     @AfterEach
     void tearDown() {
         articleRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    @Test
+    public void mockmvc_should_be_set() {
+        assertThat(mockMvc).isNotNull();
     }
 
     @Test
@@ -59,8 +82,9 @@ class ArticleResourceTest {
 
         String jsonMock = objectMapper.writeValueAsString(articleRequest);
         mockMvc.perform(post("/api/articles")
-                .content(jsonMock)
+                .content(jsonMock).with(httpBasic("abc", "password"))
                 .contentType(MediaType.APPLICATION_JSON))
+
                 .andExpect(status().isCreated());
     }
     @Test
@@ -89,12 +113,15 @@ class ArticleResourceTest {
                 .withBody("appl")
                 .withDescription("boot")
                 .build();
-        Article articleToBeSaved = articleRepository.save(article);
+        article.setUser(user);
+        Article articleToBeSaved = this.articleRepository.save(article);
         String id = String.format("%s-%s", articleToBeSaved.getSlug(), articleToBeSaved.getId());
+        System.out.println("iddddddd" + id);
         String jsonMock = objectMapper.writeValueAsString(articleRequest);
         mockMvc.perform(patch("/api/articles/{slug_id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonMock))
+                .content(jsonMock)
+                .with(httpBasic("abc", "password")))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -105,10 +132,12 @@ class ArticleResourceTest {
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe").build();
+        article.setUser(user);
         Article savedArticle = articleRepository.save(article);
         String id = String.format("%s-%s", savedArticle.getSlug(), savedArticle.getId());
         mockMvc.perform(delete("/api/articles/{slug_id}", id)
-        ).andDo(print())
+                .with(httpBasic("abc", "password")))
+                .andDo(print())
                 .andExpect(status().isNoContent());
     }
     @Test
@@ -125,6 +154,7 @@ class ArticleResourceTest {
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe").build();
+        article.setUser(user);
         Article savedArticle = articleRepository.save(article);
         String id = savedArticle.getSlug() + "-" + savedArticle.getId();
         mockMvc.perform(get("/api/articles/{slug_uuid}", id))
@@ -140,6 +170,7 @@ class ArticleResourceTest {
         Article article1 = create("Title1", "Description1", "body1");
         Article article2 = create("Title2", "description2", "body2");
         Article article3 = create("Title3", "description3", "body3");
+
         articleRepository.saveAll(asList(article1, article2, article3));
         this.mockMvc.perform(get("/api/articles"))
                 .andDo(print())
@@ -160,11 +191,13 @@ class ArticleResourceTest {
     }
 
     private Article create(String title, String description, String body) {
-        return new Article.Builder()
+        Article article = new Article.Builder()
                 .withTitle(title)
                 .withDescription(description)
                 .withDescription(body)
                 .build();
+        article.setUser(user);
+        return article;
     }
     /*@Test
     void should_return_articles_on_the_basis_of_status() throws Exception {
@@ -208,6 +241,7 @@ class ArticleResourceTest {
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe").build();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String id = saved.getSlug() + "-" + saved.getId();
         String uri = "/api/articles/" + id + "/timetoread";
@@ -226,6 +260,7 @@ class ArticleResourceTest {
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe")
                 .withTags(new HashSet<>(Arrays.asList("java", "Spring Boot", "tutorial"))).build();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String uri = "/api/articles/tags";
         mockMvc.perform(get(uri))
@@ -236,14 +271,15 @@ class ArticleResourceTest {
                 .andExpect(jsonPath("$[0].occurrence").value(1));
     }
 
-/*
-    @Test
+
+   /* @Test
     void should_mark_article_as_favorite() throws Exception {
         Article article = new Article.Builder()
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe")
                 .withTags(new HashSet<>(Arrays.asList("java", "Spring Boot", "tutorial"))).build();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String id = String.format("%s-%s", saved.getSlug(), saved.getId());
         this.mockMvc.perform(patch("/api/articles/{slug_uuid}", id)
@@ -252,15 +288,16 @@ class ArticleResourceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.favorited").value(true))
                 .andExpect(jsonPath("$.favoritesCount").value(saved.getFavoritesCount() + 1));
-    }
+    }*/
 
-    @Test
+    /*@Test
     void should_mark_article_as_unfavorite() throws Exception {
         Article article = new Article.Builder()
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe")
                 .withTags(new HashSet<>(Arrays.asList("java", "Spring Boot", "tutorial"))).build();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
 
         String id = String.format("%s-%s", saved.getSlug(), saved.getId());
@@ -270,9 +307,51 @@ class ArticleResourceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.favorited").value(false))
                 .andExpect(jsonPath("$.favoritesCount").value(0));
+    }*/
+
+    @Test
+    void should_not_update_article_if_user_is_not_the_owner_of_the_article() throws Exception {
+        ArticleRequest updateRequest = new ArticleRequest.Builder()
+                .withBody("body")
+                .withTitle("title")
+                .withDescription("desc")
+                .withTags(new HashSet<>(Arrays.asList("java", "Spring Boot", "tutorial"))).build();
+        Article article = new Article.Builder()
+                .withTitle("DEF")
+                .withDescription("Desc")
+                .withBody("DEF")
+                .build();
+        article.setUser(user);
+        Article saved = articleRepository.save(article);
+        String json = objectMapper.writeValueAsString(updateRequest);
+        String id = String.format("%s-%s", saved.getSlug(), saved.getId());
+        UserRequest userRequest1 = new UserRequest("test1", "test1@xebia.com", "password");
+        User user1 = userRequest1.toUser(passwordEncoder);
+        userRepository.save(user1);
+        this.mockMvc.perform(patch("/api/articles/{slug_uuid}", id)
+                .contentType(MediaType.APPLICATION_JSON).content(json)
+                .with(httpBasic("test1", "password")))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
-*/
 
-
+    @Test
+    void should_not_delete_article_if_user_is_not_owner_of_if() throws Exception {
+        UserRequest userRequest1 = new UserRequest("test1", "test1@xebia.com", "password");
+        User user1 = userRequest1.toUser(passwordEncoder);
+        userRepository.save(user1);
+        Article article = new Article.Builder()
+                .withTitle("spring")
+                .withBody("appl")
+                .withDescription("boot")
+                .build();
+        article.setUser(user);
+        Article savedArticle = articleRepository.save(article);
+        String id = String.format("%s-%s", savedArticle.getSlug(), savedArticle.getId());
+        this.mockMvc.perform(delete("/api/articles/{slug_id}", id)
+                .with(httpBasic("test1", "password")))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
 
 }

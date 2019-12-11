@@ -3,7 +3,9 @@ package com.xebia.fs101.api;
 import com.xebia.fs101.model.Article;
 import com.xebia.fs101.model.ReadingTime;
 import com.xebia.fs101.model.Status;
+import com.xebia.fs101.model.User;
 import com.xebia.fs101.representation.ArticleRequest;
+import com.xebia.fs101.representation.ArticleResponse;
 import com.xebia.fs101.representation.ReadingTimeResponse;
 import com.xebia.fs101.representation.TagResponse;
 import com.xebia.fs101.service.ArticleService;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,24 +43,26 @@ public class ArticleResource {
     @Autowired
     ReadingTimeService readingTimeService;
     @PostMapping
-    public ResponseEntity<Article> create(@Valid @RequestBody ArticleRequest articleRequest) {
+    public ResponseEntity<ArticleResponse> create(@AuthenticationPrincipal User user, @Valid @RequestBody ArticleRequest articleRequest) {
         try {
-            Article article = articleService.save(articleRequest);
-            return new ResponseEntity<>(article, HttpStatus.CREATED);
+            Article article = articleService.save(articleRequest, user);
+            ArticleResponse articleResponse = ArticleResponse.from(article);
+            return new ResponseEntity<>(articleResponse, HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
     @PatchMapping(path = "/{slug_uuid}")
-    public ResponseEntity<Article> update(@RequestBody ArticleRequest copyFrom,
+    public ResponseEntity<Article> update(@AuthenticationPrincipal User user, @RequestBody ArticleRequest copyFrom,
                                           @PathVariable("slug_uuid") String slugUuid) {
         Article updateArticle = copyFrom.toArticle();
-        Optional<Article> updatedArticle = articleService.update(updateArticle, slugUuid);
+        Optional<Article> updatedArticle = articleService.update(updateArticle, slugUuid, user);
         return updatedArticle.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
     @DeleteMapping(path = "/{slug_uuid}")
-    public ResponseEntity<Void> delete(@PathVariable("slug_uuid") String slugUuid) {
-        boolean deleted = articleService.delete(slugUuid);
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal User user
+            , @PathVariable("slug_uuid") String slugUuid) {
+        boolean deleted = articleService.delete(slugUuid, user);
         if (!deleted) {
             return ResponseEntity.notFound().build();
         }

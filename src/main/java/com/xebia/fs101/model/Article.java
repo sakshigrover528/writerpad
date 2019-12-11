@@ -1,5 +1,7 @@
 package com.xebia.fs101.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -8,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -50,6 +53,9 @@ public class Article {
     @JoinColumn(name = "article")
     private List<Comment> comments;
     private Status status;
+    @JsonManagedReference
+    @ManyToOne(optional = false)
+    private User user;
 
     public Article() {
     }
@@ -108,6 +114,10 @@ public class Article {
         return favoritesCount;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public void setFavorite(Boolean favorite) {
         this.favorite = favorite;
     }
@@ -122,6 +132,10 @@ public class Article {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public void setUser(User user) {
+        this.user=user;
     }
 
     public static final class Builder {
@@ -220,6 +234,24 @@ public class Article {
 
         this.updatedAt = new Date();
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Article{" +
+                "id=" + id +
+                ", slug='" + slug + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", body='" + body + '\'' +
+                ", tags=" + tags +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", favorite=" + favorite +
+                ", favoritesCount=" + favoritesCount +
+                ", comments=" + comments +
+                ", status=" + status +
+                '}';
     }
 }
 

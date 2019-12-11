@@ -1,8 +1,11 @@
 package com.xebia.fs101.service;
 
+import com.xebia.fs101.exception.ForbiddenUserException;
 import com.xebia.fs101.model.Article;
 import com.xebia.fs101.model.Status;
+import com.xebia.fs101.model.User;
 import com.xebia.fs101.repository.ArticleRepository;
+import com.xebia.fs101.repository.UserRepository;
 import com.xebia.fs101.representation.ArticleRequest;
 import com.xebia.fs101.representation.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +27,29 @@ public class ArticleService {
     ArticleRepository articleRepository;
     @Autowired
     MailService mailService;
+    @Autowired
+    UserRepository userRepository;
 
-    public Article save(ArticleRequest articleRequest) {
-        return articleRepository.save(articleRequest.toArticle());
+    public Article save(ArticleRequest articleRequest, User user) {
+        Optional<User> optionalUser = userRepository.findById(user.getId());
+        User foundUser = optionalUser.get();
+        Article article = articleRequest.toArticle();
+        article.setUser(foundUser);
+        return articleRepository.save(article);
     }
 
-    public Optional<Article> update(Article updateArticle, String slugUuid) {
+    public Optional<Article> update(Article updateArticle, String slugUuid, User user) {
         UUID id = toUuid(slugUuid);
+        Optional<User> optionalUser = userRepository.findById(user.getId());
+        User foundUser = optionalUser.get();
         Optional<Article> optionalArticle = articleRepository.findById(id);
         if (!optionalArticle.isPresent()) {
             return Optional.empty();
         }
         Article article = optionalArticle.get();
+        if (!(foundUser.getUsername().equals(article.getUser().getUsername()))) {
+            throw new ForbiddenUserException("You are not authorised to perform this operation.");
+        }
         article.update(updateArticle);
         return Optional.of(articleRepository.save(article));
     }
@@ -47,13 +61,19 @@ public class ArticleService {
         return optionalArticle;
     }
 
-    public boolean delete(String slugUuid) {
+    public boolean delete(String slugUuid, User user) {
         UUID uuid = toUuid(slugUuid);
         Optional<Article> optionalArticle = articleRepository.findById(uuid);
         if (!optionalArticle.isPresent()) {
             return false;
         }
-        optionalArticle.ifPresent(a -> articleRepository.deleteById(a.getId()));
+        optionalArticle.ifPresent(a -> {
+            if (user.getUsername().equals(a.getUser().getUsername())) {
+                articleRepository.deleteById(a.getId());
+            } else {
+                throw new ForbiddenUserException("You aren't allowed to perform this function");
+            }
+        });
         return true;
     }
 

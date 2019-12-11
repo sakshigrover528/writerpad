@@ -3,15 +3,21 @@ package com.xebia.fs101.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xebia.fs101.model.Article;
 import com.xebia.fs101.model.Comment;
+import com.xebia.fs101.model.User;
 import com.xebia.fs101.repository.ArticleRepository;
 import com.xebia.fs101.repository.CommentRepository;
+import com.xebia.fs101.repository.UserRepository;
 import com.xebia.fs101.representation.CommentRequest;
+import com.xebia.fs101.representation.UserRequest;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -26,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 class CommentResourceTest {
     @Autowired
     MockMvc mockMvc;
@@ -39,10 +46,26 @@ class CommentResourceTest {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        UserRequest userRequest = new UserRequest("test", "test@xebia.com", "password");
+        user = userRequest.toUser(passwordEncoder);
+        userRepository.save(user);
+    }
+
     @AfterEach
     void tearDown() {
         commentRepository.deleteAll();
         articleRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -51,6 +74,7 @@ class CommentResourceTest {
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe").build();
+        article.setUser(user);
         Article savedArticle = articleRepository.save(article);
         String id = String.format("%s-%s", savedArticle.getSlug(), savedArticle.getId());
 
@@ -76,6 +100,7 @@ class CommentResourceTest {
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe").build();
+        article.setUser(user);
         Article savedArticle = articleRepository.save(article);
         String id = String.format("%s-%s", savedArticle.getSlug(), savedArticle.getId());
 
@@ -95,6 +120,7 @@ class CommentResourceTest {
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe").build();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String id = String.format("%s-%s", saved.getSlug(), saved.getId());
 
@@ -114,6 +140,7 @@ class CommentResourceTest {
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe").build();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String id = saved.getSlug() + "-" + saved.getId();
         Comment comment = new Comment("", "10.0.0.1", saved);
@@ -130,6 +157,7 @@ class CommentResourceTest {
                 .withTitle("How to learn Spring Boot by building an app")
                 .withDescription("Ever wonder how?")
                 .withBody("You have to believe").build();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String id = "invalid id" + UUID.randomUUID().toString();
         Comment comment = new Comment("Awesome Tutorial!", "10.1.1.1", saved);
@@ -147,6 +175,7 @@ class CommentResourceTest {
                 .withTitle("title")
                 .withDescription("description")
                 .build();
+        article.setUser(user);
         Article savedArticle = articleRepository.save(article);
         String slugId = String.format("%s_%s", savedArticle.getSlug(), savedArticle.getId());
         CommentRequest commentRequest=new CommentRequest("buttcheeks");
