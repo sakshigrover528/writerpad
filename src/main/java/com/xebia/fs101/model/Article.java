@@ -135,7 +135,7 @@ public class Article {
     }
 
     public void setUser(User user) {
-        this.user=user;
+        this.user = user;
     }
 
     public static final class Builder {
@@ -238,20 +238,20 @@ public class Article {
 
     @Override
     public String toString() {
-        return "Article{" +
-                "id=" + id +
-                ", slug='" + slug + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", body='" + body + '\'' +
-                ", tags=" + tags +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", favorite=" + favorite +
-                ", favoritesCount=" + favoritesCount +
-                ", comments=" + comments +
-                ", status=" + status +
-                '}';
+        return "Article{"
+                + "id=" + id
+                + ", slug='" + slug + '\''
+                + ", title='" + title + '\''
+                + ", description='" + description + '\''
+                + ", body='" + body + '\''
+                + ", tags=" + tags
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + ", favorite=" + favorite
+                + ", favoritesCount=" + favoritesCount
+                + ", comments=" + comments
+                + ", status=" + status
+                + '}';
     }
 }
 

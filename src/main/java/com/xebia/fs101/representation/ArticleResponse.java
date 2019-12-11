@@ -51,7 +51,7 @@ public class ArticleResponse {
     }
     private static class UserResponse {
         private String username;
-        public UserResponse(String username) {
+        UserResponse(String username) {
             this.username = username;
         }
         public String getUsername() {

@@ -3,7 +3,6 @@ package com.xebia.fs101.service;
 import com.xebia.fs101.model.User;
 import com.xebia.fs101.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -10,3 +10,4 @@ public class ForbiddenUserException extends RuntimeException {
         super(message);
     }
 }
+

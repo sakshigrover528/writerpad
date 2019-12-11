@@ -43,7 +43,9 @@ public class ArticleResource {
     @Autowired
     ReadingTimeService readingTimeService;
     @PostMapping
-    public ResponseEntity<ArticleResponse> create(@AuthenticationPrincipal User user, @Valid @RequestBody ArticleRequest articleRequest) {
+    public ResponseEntity<ArticleResponse> create(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody ArticleRequest articleRequest) {
         try {
             Article article = articleService.save(articleRequest, user);
             ArticleResponse articleResponse = ArticleResponse.from(article);
@@ -53,8 +55,10 @@ public class ArticleResource {
         }
     }
     @PatchMapping(path = "/{slug_uuid}")
-    public ResponseEntity<Article> update(@AuthenticationPrincipal User user, @RequestBody ArticleRequest copyFrom,
-                                          @PathVariable("slug_uuid") String slugUuid) {
+    public ResponseEntity<Article> update(
+            @AuthenticationPrincipal User user,
+            @RequestBody ArticleRequest copyFrom,
+            @PathVariable("slug_uuid") String slugUuid) {
         Article updateArticle = copyFrom.toArticle();
         Optional<Article> updatedArticle = articleService.update(updateArticle, slugUuid, user);
         return updatedArticle.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
