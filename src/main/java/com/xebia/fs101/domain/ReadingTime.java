@@ -1,4 +1,4 @@
-package com.xebia.fs101.model;
+package com.xebia.fs101.domain;
 
 public class ReadingTime {
     private int minutes;

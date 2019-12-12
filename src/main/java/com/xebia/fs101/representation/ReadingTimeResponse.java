@@ -1,6 +1,6 @@
 package com.xebia.fs101.representation;
 
-import com.xebia.fs101.model.ReadingTime;
+import com.xebia.fs101.domain.ReadingTime;
 
 public class ReadingTimeResponse {
     private String articleID;

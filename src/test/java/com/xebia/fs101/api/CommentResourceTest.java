@@ -1,9 +1,10 @@
 package com.xebia.fs101.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.Comment;
-import com.xebia.fs101.model.User;
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.Comment;
+import com.xebia.fs101.domain.User;
+import com.xebia.fs101.domain.UserRole;
 import com.xebia.fs101.repository.ArticleRepository;
 import com.xebia.fs101.repository.CommentRepository;
 import com.xebia.fs101.repository.UserRepository;
@@ -56,7 +57,8 @@ class CommentResourceTest {
 
     @BeforeEach
     void setUp() {
-        UserRequest userRequest = new UserRequest("test", "test@xebia.com", "password");
+        UserRequest userRequest = new UserRequest("test",
+                "test@xebia.com", "password", UserRole.WRITER);
         user = userRequest.toUser(passwordEncoder);
         userRepository.save(user);
     }

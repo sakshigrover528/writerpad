@@ -1,6 +1,6 @@
 package com.xebia.fs101.service;
 
-import com.xebia.fs101.model.ReadingTime;
+import com.xebia.fs101.domain.ReadingTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

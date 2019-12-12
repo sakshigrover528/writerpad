@@ -1,6 +1,6 @@
 package com.xebia.fs101.service;
 
-import com.xebia.fs101.model.Comment;
+import com.xebia.fs101.domain.Comment;
 import com.xebia.fs101.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package com.xebia.fs101.representation;
 
 
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.Comment;
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.Comment;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

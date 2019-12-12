@@ -1,15 +1,17 @@
 package com.xebia.fs101.api;
 
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.ReadingTime;
-import com.xebia.fs101.model.Status;
-import com.xebia.fs101.model.User;
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.ReadingTime;
+import com.xebia.fs101.domain.Status;
+import com.xebia.fs101.domain.User;
 import com.xebia.fs101.representation.ArticleRequest;
 import com.xebia.fs101.representation.ArticleResponse;
 import com.xebia.fs101.representation.ReadingTimeResponse;
 import com.xebia.fs101.representation.TagResponse;
 import com.xebia.fs101.service.ArticleService;
+import com.xebia.fs101.service.EditorOnly;
 import com.xebia.fs101.service.ReadingTimeService;
+import com.xebia.fs101.service.WriterOnly;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.xebia.fs101.utils.StringUtils.toUuid;
@@ -42,6 +45,8 @@ public class ArticleResource {
     ArticleService articleService;
     @Autowired
     ReadingTimeService readingTimeService;
+
+    @WriterOnly
     @PostMapping
     public ResponseEntity<ArticleResponse> create(
             @AuthenticationPrincipal User user,
@@ -53,6 +58,8 @@ public class ArticleResource {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+
+
     }
     @PatchMapping(path = "/{slug_uuid}")
     public ResponseEntity<Article> update(
@@ -60,12 +67,15 @@ public class ArticleResource {
             @RequestBody ArticleRequest copyFrom,
             @PathVariable("slug_uuid") String slugUuid) {
         Article updateArticle = copyFrom.toArticle();
+        if (Objects.nonNull(updateArticle.getBody()))
+            articleService.checkPlagiarism(updateArticle.getBody());
         Optional<Article> updatedArticle = articleService.update(updateArticle, slugUuid, user);
         return updatedArticle.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+
     }
     @DeleteMapping(path = "/{slug_uuid}")
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal User user
-            , @PathVariable("slug_uuid") String slugUuid) {
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal User user,
+                                       @PathVariable("slug_uuid") String slugUuid) {
         boolean deleted = articleService.delete(slugUuid, user);
         if (!deleted) {
             return ResponseEntity.notFound().build();
@@ -100,6 +110,7 @@ public class ArticleResource {
 
     }
 
+    @EditorOnly
     @PostMapping(path = "/{slugUuid}/PUBLISH")
     public ResponseEntity<List<Article>> publishArticle(
             @PathVariable("slugUuid") final String slugUuid) {

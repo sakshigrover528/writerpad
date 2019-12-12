@@ -1,7 +1,7 @@
 package com.xebia.fs101.api;
 
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.Comment;
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.Comment;
 import com.xebia.fs101.representation.CommentRequest;
 import com.xebia.fs101.service.ArticleService;
 import com.xebia.fs101.service.CommentService;

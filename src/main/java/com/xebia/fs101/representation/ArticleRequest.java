@@ -1,14 +1,14 @@
 package com.xebia.fs101.representation;
 
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.Status;
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.Status;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.xebia.fs101.model.Status.DRAFT;
+import static com.xebia.fs101.domain.Status.DRAFT;
 
 
 public class ArticleRequest {

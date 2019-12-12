@@ -1,6 +1,6 @@
 package com.xebia.fs101.repository;
 
-import com.xebia.fs101.model.Comment;
+import com.xebia.fs101.domain.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

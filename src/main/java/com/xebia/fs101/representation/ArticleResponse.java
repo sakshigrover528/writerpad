@@ -1,7 +1,7 @@
 package com.xebia.fs101.representation;
 
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.Status;
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.Status;
 
 import java.util.Date;
 import java.util.Set;

@@ -1,5 +1,6 @@
 package com.xebia.fs101.service;
 
+import com.xebia.fs101.exception.SameContentExistsException;
 import net.ricecode.similarity.JaroWinklerStrategy;
 import net.ricecode.similarity.SimilarityStrategy;
 import net.ricecode.similarity.StringSimilarityService;
@@ -22,6 +23,6 @@ public class PlagiarismChecker {
     public void checkPlagiarism(String source, String target) {
         double score = service.score(source, target);
         if (score > this.requiredScore)
-            throw new IllegalArgumentException("Same Content already exists");
+            throw new SameContentExistsException("Same Content already exists");
     }
 }

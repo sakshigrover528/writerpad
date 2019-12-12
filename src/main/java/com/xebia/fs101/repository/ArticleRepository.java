@@ -1,7 +1,7 @@
 package com.xebia.fs101.repository;
 
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.Status;
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.Status;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

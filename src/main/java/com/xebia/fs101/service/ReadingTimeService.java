@@ -1,6 +1,6 @@
 package com.xebia.fs101.service;
 
-import com.xebia.fs101.model.ReadingTime;
+import com.xebia.fs101.domain.ReadingTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

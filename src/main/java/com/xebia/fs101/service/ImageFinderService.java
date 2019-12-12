@@ -14,12 +14,10 @@ public class ImageFinderService {
     @Value("${spring.imageFinderservice.clientID}")
     String clientId;
     private RestTemplate restTemplate;
-
     @Autowired
     public ImageFinderService() {
         this.restTemplate = new RestTemplate();
     }
-
     @Autowired
     private ObjectMapper objectMapper;
 

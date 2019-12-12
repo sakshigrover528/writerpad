@@ -1,9 +1,10 @@
 package com.xebia.fs101.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.Status;
-import com.xebia.fs101.model.User;
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.Status;
+import com.xebia.fs101.domain.User;
+import com.xebia.fs101.domain.UserRole;
 import com.xebia.fs101.repository.ArticleRepository;
 import com.xebia.fs101.repository.UserRepository;
 import com.xebia.fs101.representation.ArticleRequest;
@@ -18,13 +19,14 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 
+import static com.xebia.fs101.domain.UserRole.EDITOR;
+import static com.xebia.fs101.domain.UserRole.WRITER;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -53,26 +55,32 @@ class ArticleResourceTest {
 
     private User user;
 
+    private UserRequest createUserRequest(String username, String email,
+                                          String password, UserRole userRole) {
+        return new UserRequest(username, email, password, userRole);
+    }
+
     @BeforeEach
     void setUp() {
-        UserRequest userRequest = new UserRequest("abc", "sakshi.grover@xebia.com", "password");
+        UserRequest userRequest = createUserRequest("abc",
+                "sakshi.grover@xebia.com", "password", WRITER);
         user = userRequest.toUser(passwordEncoder);
         userRepository.save(user);
     }
-
     @AfterEach
     void tearDown() {
         articleRepository.deleteAll();
         userRepository.deleteAll();
     }
 
+
     @Test
-    public void mockmvc_should_be_set() {
+    void mockmvc_should_be_set() {
         assertThat(mockMvc).isNotNull();
     }
 
     @Test
-    void should_return_response_code_201_when_valid_data_is_passed() throws Exception {
+    void shoud_return_response_code_201_when_valid_data_is_passed() throws Exception {
         ArticleRequest articleRequest = new ArticleRequest.Builder()
                 .withTitle("How to learn Spring Boot")
                 .withDescription("Ever wonder how?")
@@ -194,7 +202,7 @@ class ArticleResourceTest {
         Article article = new Article.Builder()
                 .withTitle(title)
                 .withDescription(description)
-                .withDescription(body)
+                .withBody(body)
                 .build();
         article.setUser(user);
         return article;
@@ -213,26 +221,41 @@ class ArticleResourceTest {
 
     }*/
 
-    //@Test
-    /*void should_publish_article() throws Exception {
-        Article article=createArticle("Title","Desc","Body");
+   /* @Test
+    void should_publish_article() throws Exception {
+        UserRequest userRequest = new UserRequest("sakshi", "abc@gmail.com",
+                "password", EDITOR);
+        User editor = userRequest.toUser(passwordEncoder);
+        userRepository.save(editor);
+
+        Article article = create("Title", "Desc", "Body");
+        article.setUser(editor);
         Article saved = articleRepository.save(article);
+
         String id = String.format("%s-%s", saved.getSlug(), saved.getId());
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/{slugUuid}/PUBLISH",id))
+        this.mockMvc.perform(
+                post("/api/articles/{slugUuid}/PUBLISH", id)
+                        .with(httpBasic("sakshi", "password")))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }*/
 
     @Test
     void should_give_bad_request_when_tried_to_publish_the_already_published_article() throws Exception {
+        UserRequest userRequest = new UserRequest("sakshi", "abc@gmail.com",
+                "password", EDITOR);
+        User editor = userRequest.toUser(passwordEncoder);
+        userRepository.save(editor);
         Article article = create("Title", "Desc", "Body");
+        article.setUser(editor);
         article.setStatus(Status.PUBLISHED);
         Article saved = articleRepository.save(article);
         String id = String.format("%s-%s", saved.getSlug(), saved.getId());
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/articles/{slugUuid}/PUBLISH",id))
+        this.mockMvc.perform(post(
+                "/api/articles/{slugUuid}/PUBLISH", id)
+                .with(httpBasic("sakshi", "password")))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-
     }
 
     @Test
@@ -325,7 +348,8 @@ class ArticleResourceTest {
         Article saved = articleRepository.save(article);
         String json = objectMapper.writeValueAsString(updateRequest);
         String id = String.format("%s-%s", saved.getSlug(), saved.getId());
-        UserRequest userRequest1 = new UserRequest("test1", "test1@xebia.com", "password");
+        UserRequest userRequest1 = createUserRequest("test1", "test1@xebia.com",
+                "password", WRITER);
         User user1 = userRequest1.toUser(passwordEncoder);
         userRepository.save(user1);
         this.mockMvc.perform(patch("/api/articles/{slug_uuid}", id)
@@ -337,7 +361,8 @@ class ArticleResourceTest {
 
     @Test
     void should_not_delete_article_if_user_is_not_owner_of_if() throws Exception {
-        UserRequest userRequest1 = new UserRequest("test1", "test1@xebia.com", "password");
+        UserRequest userRequest1 = createUserRequest("test1", "test1@xebia.com",
+                "password", WRITER);
         User user1 = userRequest1.toUser(passwordEncoder);
         userRepository.save(user1);
         Article article = new Article.Builder()
@@ -354,4 +379,46 @@ class ArticleResourceTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void should_update_article_if_similar_article_is_not_present_excluding_the_one_which_is_getting_updated() throws Exception {
+        Article article = new Article.Builder()
+                .withTitle("How to learn Spring Boot by building an app")
+                .withDescription("Ever wonder how?")
+                .withBody("You have to believe").build();
+        article.setUser(user);
+        Article savedArticle = articleRepository.save(article);
+        String id = String.format("%s-%s", savedArticle.getSlug(), savedArticle.getId());
+        ArticleRequest articleRequest = new ArticleRequest.Builder().withBody(
+                "body").withTitle("title").withDescription("desc").build();
+        String json = objectMapper.writeValueAsString(articleRequest);
+        this.mockMvc.perform(patch("/api/articles/{slug_id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .with(httpBasic("abc", "password")))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_not_update_article_if_a_article_with_similar_body_is_already_present()
+            throws Exception {
+        User anotherUser = createUserRequest("sakshi", "abc@gmail.com",
+                "password", WRITER).toUser(passwordEncoder);
+        userRepository.save(anotherUser);
+        Article article = create("title", "desc", "body");
+        articleRepository.save(article);
+
+        String id = String.format("%s-%s", article.getSlug(), article.getId());
+
+        ArticleRequest articleRequest = new ArticleRequest.Builder().withBody(
+                "body").withTitle("title").withDescription("desc").build();
+        String json = objectMapper.writeValueAsString(articleRequest);
+
+        this.mockMvc.perform(patch("/api/articles/{slug_id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .with(httpBasic("sakshi", "password")))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
 }

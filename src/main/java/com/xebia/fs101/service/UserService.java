@@ -1,6 +1,6 @@
 package com.xebia.fs101.service;
 
-import com.xebia.fs101.model.User;
+import com.xebia.fs101.domain.User;
 import com.xebia.fs101.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

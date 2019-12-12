@@ -1,9 +1,10 @@
-package com.xebia.fs101.model;
+package com.xebia.fs101.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,6 +26,8 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "user")
     private List<Article> articles;
+    @Enumerated
+    private UserRole userRole;
 
     public List<Article> getArticles() {
         return articles;
@@ -34,10 +37,11 @@ public class User {
 
     }
 
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password, UserRole userRole) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.userRole = userRole;
     }
 
     public User(User other) {
@@ -45,6 +49,7 @@ public class User {
         this.username = other.username;
         this.email = other.email;
         this.password = other.password;
+        this.userRole = other.userRole;
     }
 
     public Long getId() {
@@ -61,6 +66,10 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
     }
 
     @Override

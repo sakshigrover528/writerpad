@@ -1,6 +1,6 @@
 package com.xebia.fs101.service;
 
-import com.xebia.fs101.model.User;
+import com.xebia.fs101.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +14,7 @@ public class CustomUserDetails extends User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return AuthorityUtils.createAuthorityList("ROLE_USER");
+        return AuthorityUtils.createAuthorityList(this.getUserRole().getRoleName());
     }
 
     @Override

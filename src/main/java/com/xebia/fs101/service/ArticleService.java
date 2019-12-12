@@ -1,9 +1,9 @@
 package com.xebia.fs101.service;
 
+import com.xebia.fs101.domain.Article;
+import com.xebia.fs101.domain.Status;
+import com.xebia.fs101.domain.User;
 import com.xebia.fs101.exception.ForbiddenUserException;
-import com.xebia.fs101.model.Article;
-import com.xebia.fs101.model.Status;
-import com.xebia.fs101.model.User;
 import com.xebia.fs101.repository.ArticleRepository;
 import com.xebia.fs101.repository.UserRepository;
 import com.xebia.fs101.representation.ArticleRequest;
@@ -18,17 +18,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.xebia.fs101.model.Status.PUBLISHED;
+import static com.xebia.fs101.domain.Status.PUBLISHED;
 import static com.xebia.fs101.utils.StringUtils.toUuid;
 
 @Service
 public class ArticleService {
     @Autowired
-    ArticleRepository articleRepository;
+    private ArticleRepository articleRepository;
     @Autowired
-    MailService mailService;
+    private MailService mailService;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
     private PlagiarismChecker plagiarismChecker;
     @Autowired

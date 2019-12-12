@@ -1,6 +1,6 @@
 package com.xebia.fs101.api;
 
-import com.xebia.fs101.model.User;
+import com.xebia.fs101.domain.User;
 import com.xebia.fs101.representation.UserRequest;
 import com.xebia.fs101.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,12 @@
 package com.xebia.fs101.representation;
 
-import com.xebia.fs101.model.User;
+import com.xebia.fs101.domain.User;
+import com.xebia.fs101.domain.UserRole;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class UserRequest {
 
@@ -15,11 +17,14 @@ public class UserRequest {
     private String email;
     @NotBlank(message = "password can't be empty")
     private String password;
+    @NotNull
+    private UserRole userRole;
 
-    public UserRequest(String username, String email, String password) {
+    public UserRequest(String username, String email, String password, UserRole userRole) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.userRole = userRole;
     }
 
     public String getUsername() {
@@ -34,9 +39,17 @@ public class UserRequest {
         return password;
     }
 
-    public User toUser(PasswordEncoder passwordEncoder) {
-        return new User(this.username, this.email, passwordEncoder.encode(this.password));
+    public UserRole getUserRole() {
+        return userRole;
     }
 
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
+    public User toUser(PasswordEncoder passwordEncoder) {
+        return new User(this.username, this.email,
+                passwordEncoder.encode(this.password), this.userRole);
+    }
 }
 
