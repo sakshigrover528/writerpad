@@ -56,6 +56,7 @@ public class Article {
     @JsonManagedReference
     @ManyToOne(optional = false)
     private User user;
+    private String image;
 
     public Article() {
     }
@@ -136,6 +137,14 @@ public class Article {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public static final class Builder {

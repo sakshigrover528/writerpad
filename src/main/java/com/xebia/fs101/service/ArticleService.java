@@ -29,12 +29,17 @@ public class ArticleService {
     MailService mailService;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private PlagiarismChecker plagiarismChecker;
+    @Autowired
+    private ImageFinderService imageFinderService;
 
     public Article save(ArticleRequest articleRequest, User user) {
         Optional<User> optionalUser = userRepository.findById(user.getId());
         User foundUser = optionalUser.get();
         Article article = articleRequest.toArticle();
         article.setUser(foundUser);
+        article.setImage(imageFinderService.findPicture());
         return articleRepository.save(article);
     }
 
@@ -151,5 +156,11 @@ public class ArticleService {
             throw new IllegalArgumentException("This article is already unfavorited.");
         }
 
+    }
+
+    public void checkPlagiarism(String body) {
+        List<Article> articles = articleRepository.findAll();
+        articles
+                .forEach(article -> plagiarismChecker.checkPlagiarism(body, article.getBody()));
     }
 }
