@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,19 +40,23 @@ class UserResourceTest {
     @Test
     void should_create_user() throws Exception {
         UserRequest userRequest = new UserRequest("Sakshi",
-                "sakshi.grover@xebia.com", "password", UserRole.WRITER);
-        String json = objectMapper.writeValueAsString(userRequest);
+                "sakshi.grover@xebia.com", "password", UserRole.ADMIN);
+        userRepository.save(userRequest.toUser(passwordEncoder));
+        UserRequest userRequest2 = new UserRequest("Sakshi1",
+                "sakshi.grover1@xebia.com", "password", UserRole.WRITER);
+        String json = objectMapper.writeValueAsString(userRequest2);
         mockMvc.perform(post("/api/users")
                 .accept(APPLICATION_JSON)
                 .content(json)
-                .contentType(APPLICATION_JSON))
+                .contentType(APPLICATION_JSON).with(httpBasic("Sakshi",
+                        "password")))
                 .andExpect(status().isCreated());
     }
 
     @Test
     void should_give_bad_request_error_when_creating_user_with_same_email() throws Exception {
         UserRequest userRequest = new UserRequest("Sakshi",
-                "sakshi.grover@xebia.com", "password", UserRole.WRITER);
+                "sakshi.grover@xebia.com", "password", UserRole.ADMIN);
         userRepository.save(userRequest.toUser(passwordEncoder));
         UserRequest anotherUserRequest = new UserRequest("Sakshi",
                 "sakshi.grover@xebia.com", "password", UserRole.WRITER);
@@ -59,7 +64,8 @@ class UserResourceTest {
         mockMvc.perform(post("/api/users")
                 .accept(APPLICATION_JSON)
                 .content(json)
-                .contentType(APPLICATION_JSON))
+                .contentType(APPLICATION_JSON)
+                .with(httpBasic("Sakshi", "password")))
                 .andExpect(status().isBadRequest());
     }
 

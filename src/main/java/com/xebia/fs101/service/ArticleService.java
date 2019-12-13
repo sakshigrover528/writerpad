@@ -72,13 +72,7 @@ public class ArticleService {
         if (!optionalArticle.isPresent()) {
             return false;
         }
-        optionalArticle.ifPresent(a -> {
-            if (user.getUsername().equals(a.getUser().getUsername())) {
-                articleRepository.deleteById(a.getId());
-            } else {
-                throw new ForbiddenUserException("You aren't allowed to perform this function");
-            }
-        });
+        articleRepository.deleteById(optionalArticle.get().getId());
         return true;
     }
 

@@ -2,6 +2,7 @@ package com.xebia.fs101.api;
 
 import com.xebia.fs101.domain.User;
 import com.xebia.fs101.representation.UserRequest;
+import com.xebia.fs101.service.AdminOnly;
 import com.xebia.fs101.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class UserResource {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @AdminOnly
     @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody UserRequest userRequest) {
         try {

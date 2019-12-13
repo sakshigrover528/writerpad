@@ -8,6 +8,7 @@ import com.xebia.fs101.representation.ArticleRequest;
 import com.xebia.fs101.representation.ArticleResponse;
 import com.xebia.fs101.representation.ReadingTimeResponse;
 import com.xebia.fs101.representation.TagResponse;
+import com.xebia.fs101.service.AdminOnly;
 import com.xebia.fs101.service.ArticleService;
 import com.xebia.fs101.service.EditorOnly;
 import com.xebia.fs101.service.ReadingTimeService;
@@ -73,6 +74,8 @@ public class ArticleResource {
         return updatedArticle.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 
     }
+
+    @AdminOnly
     @DeleteMapping(path = "/{slug_uuid}")
     public ResponseEntity<Void> delete(@AuthenticationPrincipal User user,
                                        @PathVariable("slug_uuid") String slugUuid) {
@@ -82,11 +85,13 @@ public class ArticleResource {
         }
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping(path = "/{slug_uuid}")
     public ResponseEntity<Optional> findById(@PathVariable("slug_uuid") final String slugUuid) {
         Optional<Article> optionalArticle = articleService.findById(toUuid(slugUuid));
         return new ResponseEntity<>(optionalArticle, HttpStatus.OK);
     }
+
     @GetMapping
     public ResponseEntity<List<Article>> findAll(
             @RequestParam(defaultValue = "0") Integer pageNo,
