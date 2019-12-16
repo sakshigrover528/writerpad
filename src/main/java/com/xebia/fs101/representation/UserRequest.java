@@ -48,8 +48,11 @@ public class UserRequest {
     }
 
     public User toUser(PasswordEncoder passwordEncoder) {
-        return new User(this.username, this.email,
-                passwordEncoder.encode(this.password), this.userRole);
+        return new User.Builder()
+                .withUsername(this.username)
+                .withEmail(this.email)
+                .withPassword(passwordEncoder.encode(this.password))
+                .withUserRole(this.userRole).build();
     }
 }
 

@@ -23,13 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserResourceTest {
 
     @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
     UserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {

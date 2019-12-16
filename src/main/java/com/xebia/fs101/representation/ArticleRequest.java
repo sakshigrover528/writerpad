@@ -96,6 +96,18 @@ public class ArticleRequest {
 
     }
 
+    @Override
+    public String toString() {
+        return "ArticleRequest{"
+                + "title='"
+                + title
+                + '\''
+                + ", description='" + description + '\''
+                + ", body='" + body + '\''
+                + ", tags=" + tags
+                + '}';
+    }
+
     public static final class Builder {
         public Status status;
         private String title;
@@ -129,17 +141,5 @@ public class ArticleRequest {
         public ArticleRequest build() {
             return new ArticleRequest(this);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "ArticleRequest{"
-                + "title='"
-                + title
-                + '\''
-                + ", description='" + description + '\''
-                + ", body='" + body + '\''
-                + ", tags=" + tags
-                + '}';
     }
 }

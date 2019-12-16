@@ -62,6 +62,7 @@ public class ArticleResource {
 
 
     }
+
     @PatchMapping(path = "/{slug_uuid}")
     public ResponseEntity<Article> update(
             @AuthenticationPrincipal User user,

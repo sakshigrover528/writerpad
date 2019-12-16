@@ -15,11 +15,12 @@ public class ImageFinderService {
     String clientId;
     private RestTemplate restTemplate;
     @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     public ImageFinderService() {
         this.restTemplate = new RestTemplate();
     }
-    @Autowired
-    private ObjectMapper objectMapper;
 
     public String findPicture() {
         String apiUri = "https://api.unsplash.com/photos/random?client_id=";

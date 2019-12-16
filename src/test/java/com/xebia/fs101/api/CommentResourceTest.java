@@ -180,9 +180,9 @@ class CommentResourceTest {
         article.setUser(user);
         Article savedArticle = articleRepository.save(article);
         String slugId = String.format("%s_%s", savedArticle.getSlug(), savedArticle.getId());
-        CommentRequest commentRequest=new CommentRequest("buttcheeks");
-        String json=objectMapper.writeValueAsString(commentRequest);
-        mockMvc.perform(post("/api/articles/{slug_id}/comments",slugId)
+        CommentRequest commentRequest = new CommentRequest("buttcheeks");
+        String json = objectMapper.writeValueAsString(commentRequest);
+        mockMvc.perform(post("/api/articles/{slug_id}/comments", slugId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andDo(print())

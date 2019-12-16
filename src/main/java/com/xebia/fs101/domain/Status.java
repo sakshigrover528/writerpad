@@ -17,6 +17,6 @@ public enum Status {
             }
         }
         throw new IllegalArgumentException("Unknown Status type" + value + " ,Allowed values are"
-        + Arrays.toString(values()));
+                + Arrays.toString(values()));
     }
 }

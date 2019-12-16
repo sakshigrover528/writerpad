@@ -15,11 +15,13 @@ public class PlagiarismChecker {
     double requiredScore;
     private SimilarityStrategy strategy;
     private StringSimilarityService service;
+
     @Autowired
     public PlagiarismChecker() {
         this.strategy = new JaroWinklerStrategy();
         this.service = new StringSimilarityServiceImpl(this.strategy);
     }
+
     public void checkPlagiarism(String source, String target) {
         double score = service.score(source, target);
         if (score > this.requiredScore)

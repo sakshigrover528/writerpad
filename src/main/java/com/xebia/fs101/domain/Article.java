@@ -111,20 +111,24 @@ public class Article {
         return favorite;
     }
 
+    public void setFavorite(Boolean favorite) {
+        this.favorite = favorite;
+    }
+
     public int getFavoritesCount() {
         return favoritesCount;
+    }
+
+    public void setFavoritesCount(int favoritesCount) {
+        this.favoritesCount = favoritesCount;
     }
 
     public User getUser() {
         return user;
     }
 
-    public void setFavorite(Boolean favorite) {
-        this.favorite = favorite;
-    }
-
-    public void setFavoritesCount(int favoritesCount) {
-        this.favoritesCount = favoritesCount;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Status getStatus() {
@@ -135,16 +139,50 @@ public class Article {
         this.status = status;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public String getImage() {
         return image;
     }
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public Article update(Article changedArticle) {
+
+        if (Objects.nonNull(changedArticle.getTitle())) {
+            this.title = changedArticle.getTitle();
+        }
+        if (Objects.nonNull(changedArticle.getBody())) {
+            this.body = changedArticle.getBody();
+        }
+        if (Objects.nonNull(changedArticle.getDescription())) {
+            this.description = changedArticle.getDescription();
+        }
+        if (Objects.nonNull(changedArticle.getTags()) && changedArticle.getTags().size() > 0) {
+            this.tags = changedArticle.getTags();
+        }
+
+
+        this.updatedAt = new Date();
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Article{"
+                + "id=" + id
+                + ", slug='" + slug + '\''
+                + ", title='" + title + '\''
+                + ", description='" + description + '\''
+                + ", body='" + body + '\''
+                + ", tags=" + tags
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + ", favorite=" + favorite
+                + ", favoritesCount=" + favoritesCount
+                + ", comments=" + comments
+                + ", status=" + status
+                + '}';
     }
 
     public static final class Builder {
@@ -223,44 +261,6 @@ public class Article {
         public Article build() {
             return new Article(this);
         }
-    }
-
-    public Article update(Article changedArticle) {
-
-        if (Objects.nonNull(changedArticle.getTitle())) {
-            this.title = changedArticle.getTitle();
-        }
-        if (Objects.nonNull(changedArticle.getBody())) {
-            this.body = changedArticle.getBody();
-        }
-        if (Objects.nonNull(changedArticle.getDescription())) {
-            this.description = changedArticle.getDescription();
-        }
-        if (Objects.nonNull(changedArticle.getTags()) && changedArticle.getTags().size() > 0) {
-            this.tags = changedArticle.getTags();
-        }
-
-
-        this.updatedAt = new Date();
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "Article{"
-                + "id=" + id
-                + ", slug='" + slug + '\''
-                + ", title='" + title + '\''
-                + ", description='" + description + '\''
-                + ", body='" + body + '\''
-                + ", tags=" + tags
-                + ", createdAt=" + createdAt
-                + ", updatedAt=" + updatedAt
-                + ", favorite=" + favorite
-                + ", favoritesCount=" + favoritesCount
-                + ", comments=" + comments
-                + ", status=" + status
-                + '}';
     }
 }
 

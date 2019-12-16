@@ -25,8 +25,12 @@ public class ApplicationStartupRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         User admin = userRepository.findByUsernameOrEmail("admin", "admin");
         if (Objects.equals(admin, null)) {
-            User createdAdmin = new User("admin", "admin@gmail.com",
-                    passwordEncoder.encode("admin"), ADMIN);
+            User createdAdmin = new User.Builder()
+                    .withUsername("admin")
+                    .withEmail("admin@gmail.com")
+                    .withPassword(passwordEncoder.encode("admin"))
+                    .withUserRole(ADMIN).build();
+
             userRepository.save(createdAdmin);
         }
     }

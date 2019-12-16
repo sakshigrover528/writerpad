@@ -44,16 +44,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 class ArticleResourceTest {
     @Autowired
+    UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ArticleRepository articleRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
     private User writer;
     private User admin;
 
@@ -94,6 +93,7 @@ class ArticleResourceTest {
     void mockmvc_should_be_set() {
         assertThat(mockMvc).isNotNull();
     }
+
     @Test
     void should_return_response_code_201_when_valid_data_is_passed() throws Exception {
         ArticleRequest articleRequest = new ArticleRequest.Builder()
@@ -127,7 +127,7 @@ class ArticleResourceTest {
 
     @Test
     void should_update_the_article() throws Exception {
-            ArticleRequest articleRequest = new ArticleRequest.Builder()
+        ArticleRequest articleRequest = new ArticleRequest.Builder()
                 .withBody("spring boot")
                 .withDescription("application")
                 .withTitle("spring boot application")
@@ -149,6 +149,7 @@ class ArticleResourceTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
     @Test
     void should_delete_an_article_with_admin_user() throws Exception {
         Article article = new Article.Builder()
@@ -168,7 +169,7 @@ class ArticleResourceTest {
     void should_not_delete_an_article() throws Exception {
         String id = "abc" + "-" + UUID.randomUUID().toString();
         mockMvc.perform(delete("/api/articles/{slug_id}", id)
-                .with(httpBasic("sakshi","password"))
+                .with(httpBasic("sakshi", "password"))
         ).andDo(print())
                 .andExpect(status().isNotFound());
     }
