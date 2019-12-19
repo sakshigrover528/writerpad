@@ -108,7 +108,7 @@ class ArticleResourceTest {
                 .content(jsonMock).with(httpBasic("abc", "password"))
                 .contentType(MediaType.APPLICATION_JSON))
 
-                .andExpect(status().isCreated());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -407,7 +407,7 @@ class ArticleResourceTest {
     }
 
     @Test
-    void should_not_update_article_if_a_article_with_similar_body_is_already_present()
+    void should_not_create_article_if_content_is_already_there_saved_article()
             throws Exception {
 
         Article article = create("title", "desc", "body", writer);
@@ -417,11 +417,10 @@ class ArticleResourceTest {
         ArticleRequest duplicateBodyRequest = new ArticleRequest.Builder().withBody(
                 "body").withTitle("title").withDescription("desc").build();
         String json = objectMapper.writeValueAsString(duplicateBodyRequest);
-
-        this.mockMvc.perform(patch("/api/articles/{slug_id}", id)
+        this.mockMvc.perform(post("/api/articles")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
-                .with(httpBasic("sakshi", "password")))
+                .with(httpBasic("abc", "password")))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }

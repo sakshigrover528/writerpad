@@ -1,7 +1,6 @@
 package com.xebia.fs101.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -16,16 +15,17 @@ import java.util.Set;
 
 @Service
 public class SpamCheckerService {
-    private Set<String> spamWords;
 
-    @Autowired
-    private ResourceLoader resource;
+    Set<String> spamWords;
+
+    @Value("${classpath:spamwords.txt}")
+    private File file;
 
     @PostConstruct
     public void init() throws IOException {
-        File file = resource.getResource("classpath:spamwords.txt").getFile();
         List<String> lines = Files.readAllLines(file.toPath());
         this.spamWords = new HashSet<>(lines);
+
     }
 
     public boolean isSpam(String content) {

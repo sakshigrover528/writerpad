@@ -1,6 +1,7 @@
 package com.xebia.fs101.config;
 
 import com.xebia.fs101.service.CustomUserDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private JwtTokenSuccessHandler jwtTokenSuccessHandler;
     //@formatter:off
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -32,6 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                 .formLogin()
                     .loginPage("/login")
+                    .successHandler(this.jwtTokenSuccessHandler)
                     .permitAll()
                     .and()
                 .logout()
@@ -57,5 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_WRITER AND ROLE_ADMIN > ROLE_EDITOR");
         return roleHierarchy;
     }
+
+
 }
 

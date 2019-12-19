@@ -4,7 +4,7 @@ import com.xebia.fs101.domain.User;
 import com.xebia.fs101.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -18,7 +18,7 @@ public class ApplicationStartupRunner implements CommandLineRunner {
     private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
 
     @Override

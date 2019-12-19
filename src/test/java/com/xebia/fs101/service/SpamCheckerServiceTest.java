@@ -6,14 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SpamCheckerServiceTest {
@@ -22,10 +21,10 @@ class SpamCheckerServiceTest {
     @InjectMocks
     private SpamCheckerService spamCheckerService;
 
+
     @BeforeEach
-    void setUp() throws IOException {
-        when(resourceLoader.getResource(anyString())).thenReturn(new ClassPathResource("spamwords.txt"));
-        spamCheckerService.init();
+    void setUp() {
+        spamCheckerService.spamWords = new HashSet<>(Arrays.asList("buttcheeks"));
     }
 
     @Test

@@ -54,6 +54,8 @@ public class ArticleResource {
             @Valid @RequestBody ArticleRequest articleRequest) {
         try {
             Article article = articleService.save(articleRequest, user);
+            if (Objects.nonNull(article.getBody()))
+                articleService.checkPlagiarism(article.getBody());
             ArticleResponse articleResponse = ArticleResponse.from(article);
             return new ResponseEntity<>(articleResponse, HttpStatus.CREATED);
         } catch (Exception e) {
